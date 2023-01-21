@@ -7,7 +7,6 @@ global enemy_list
 
 class Player:
     def __init__(self):
-        # Load the player image and set the starting position
         self.image = pygame.image.load("player.png")
         self.x = 200
         self.y = 150
@@ -26,11 +25,9 @@ class Player:
         # Get the keys that are pressed
         keys = pygame.key.get_pressed()
 
-        # Save the original position of the player
         original_x = self.x
         original_y = self.y
 
-        # Move the player
         if keys[pygame.K_UP]:
             self.y -= self.speed
         if keys[pygame.K_DOWN]:
@@ -40,7 +37,6 @@ class Player:
         if keys[pygame.K_RIGHT]:
             self.x += self.speed
 
-        # Check for collisions with the walls
         for wall in walls:
             if wall.check_collision(self):
                 self.x = original_x
@@ -110,20 +106,16 @@ class Enemy(pygame.sprite.Sprite):
         self.height = 32
 
     def move(self):
-        # Calculate the distance to the player
         x_distance = self.player.x - self.x
         y_distance = self.player.y - self.y
         distance = math.sqrt(x_distance**2 + y_distance**2)
 
-        # Check if the enemy is within the attack range
         if distance < self.attack_range:
             self.attack(player)
         else:
-            # Move towards the player
             x_move = x_distance / distance
             y_move = y_distance / distance
 
-            # Check for collisions with the walls
             original_x = self.x
             original_y = self.y
             self.x += x_move * self.speed
@@ -245,14 +237,12 @@ class Door:
 
 
 
-# Initialize Pygame and set the window size
 WIDTH, HEIGHT = 800, 600
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 player = Player()
 camera = Camera(WIDTH, HEIGHT)
 camera.target = player
-# Run the game loop
 running = True
 walls_templates = [[
     Wall(50, 50, 48, 39, "wall.png"),
@@ -297,30 +287,22 @@ all_sprites.extend(enemy_list)
 exit_flag = False
 
 while running:
-    # Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Get the mouse position
             mouse_x, mouse_y = pygame.mouse.get_pos()
-
-            # Check if the mouse is within the attack range of the enemy
             for enemy in enemy_list:
                 x_distance = mouse_x - enemy.x
                 y_distance = mouse_y - enemy.y
                 distance = math.sqrt((player.x - enemy.x) ** 2 + (player.y - enemy.y) ** 2)
                 if distance**2 < player.attack_range**2:
-                    # Attack the enemy
                     print("atack")
                     enemy.take_damage(player.attack_damage)
 
-    # Clear the screen
     screen.fill((0, 0, 0))
 
-    # Move and draw the player
     player.move(walls)
-    # draw the wall and check collision
     for wall in walls:
         if wall.check_collision(player):
             print("Collision detected")
@@ -361,8 +343,6 @@ while running:
             exit_flag = False
             
 
-    # Update the display
     pygame.display.update()
 
-# Clean up and exit
 pygame.quit()
